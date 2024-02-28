@@ -1,15 +1,21 @@
 const UserService = require('../services/UserService')
 
-
-const signUp = async (req,res) => {
+const signUp = async (req, res) => {
     const {email, username, password} = req.body
 
-    try {
-        const result = await UserService.signup(email, username, password)
-        res.json(result)
-    } catch(e) {
-        res.status(400).json({message: e.message})
-    }
+    const result = await UserService.signup(email, username, password)
+    res.json(result)
 }
 
-module.exports = {signUp}
+const login = async (req, res) => {
+    const {emailOrUsername, password} = req.body
+
+    const result = await UserService.login(emailOrUsername, password)
+    res.json(result)
+}
+
+const getMe = (req, res) => {
+    res.json({user: req.user})
+}
+
+module.exports = {signUp, login, getMe}

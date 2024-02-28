@@ -12,9 +12,15 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
 
   app.use(express.json())
 
+  app.use('/static', express.static('public'))
+
+
   // routes
   const todoRoutes = require('./routes/toDoRoutes')
+  const userRoutes = require('./routes/userRoutes')
+
   app.use('/api/todos', todoRoutes)
+  app.use('/api/users', userRoutes)
 
 
 
