@@ -18,4 +18,16 @@ const getMe = (req, res) => {
     res.json({user: req.user})
 }
 
-module.exports = {signUp, login, getMe}
+const getUsers = async (req, res) => {
+    const {page = 1, limit = 20} = req.query
+    const result = await UserService.getUsers(page, limit)
+    res.json(result)
+}
+
+const getUserById = async (req, res) => {
+    const {id} = req.params
+    const result = await UserService.getUserById(id)
+    res.json(result)
+}
+
+module.exports = {signUp, login, getMe, getUsers, getUserById}

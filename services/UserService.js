@@ -47,6 +47,16 @@ class UserService {
             user: candidate, token
         }
     }
+
+    async getUsers(page, limit) {
+        const users = await User.find({}).skip((page - 1) * limit).limit(limit).sort({_id: -1}).lean()
+        return users
+    }
+
+    async getUserById(id) {
+        const user = await User.findById(id).lean()
+        return user
+    }
 }
 
 module.exports = new UserService()

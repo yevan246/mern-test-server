@@ -1,7 +1,7 @@
 const Todo = require('../models/toDoModels')
 
 const getToDos = async (req, res) => {
-    const todos = await Todo.find()
+    const todos = await Todo.find({user: req.user._id}).lean()
     res.json(todos)
 }
 

@@ -1,13 +1,14 @@
 const { getToDos, addToDo, deleteToDo, updateTodo } = require('../controllers/toDoControllers')
 const tryCatchMiddleware = require('../middlewares/tryCatchMiddleware')
+const checkAuthMiddleware = require('../middlewares/checkAuthMiddleware')
 
 const router = require('express').Router()
 
 
-router.get('/', tryCatchMiddleware(getToDos))
-router.post('/', addToDo)
-router.delete('/:id', deleteToDo)
-router.put('/:id', updateTodo)
+router.get('/', checkAuthMiddleware, tryCatchMiddleware(getToDos))
+router.post('/', checkAuthMiddleware, addToDo)
+router.delete('/:id', checkAuthMiddleware, deleteToDo)
+router.put('/:id', checkAuthMiddleware, updateTodo)
 
 
 module.exports = router
