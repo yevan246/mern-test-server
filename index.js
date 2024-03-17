@@ -18,9 +18,11 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
   // routes
   const todoRoutes = require('./routes/toDoRoutes')
   const userRoutes = require('./routes/userRoutes')
+  const postRoutes = require('./routes/postRoutes')
 
   app.use('/api/todos', todoRoutes)
   app.use('/api/users', userRoutes)
+  app.use('/api/posts', postRoutes)
 
 
 
