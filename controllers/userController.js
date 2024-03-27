@@ -1,33 +1,50 @@
-const UserService = require('../services/UserService')
+const UserService = require("../services/UserService");
+const PostService = require("../services/PostService");
 
 const signUp = async (req, res) => {
-    const {email, username, password} = req.body
+  const { email, username, password } = req.body;
 
-    const result = await UserService.signup(email, username, password)
-    res.json(result)
-}
+  const result = await UserService.signup(email, username, password);
+  res.json(result);
+};
 
 const login = async (req, res) => {
-    const {emailOrUsername, password} = req.body
+  const { emailOrUsername, password } = req.body;
 
-    const result = await UserService.login(emailOrUsername, password)
-    res.json(result)
-}
+  const result = await UserService.login(emailOrUsername, password);
+  res.json(result);
+};
 
 const getMe = (req, res) => {
-    res.json({user: req.user})
-}
+  res.json({ user: req.user });
+};
 
 const getUsers = async (req, res) => {
-    const {page = 1, limit = 20} = req.query
-    const result = await UserService.getUsers(page, limit)
-    res.json(result)
-}
+  const { page = 1, limit = 20 } = req.query;
+  const result = await UserService.getUsers(page, limit);
+  res.json(result);
+};
 
 const getUserById = async (req, res) => {
-    const {id} = req.params
-    const result = await UserService.getUserById(id)
-    res.json(result)
-}
+  const { id } = req.params;
+  const result = await UserService.getUserById(id);
+  res.json(result);
+};
 
-module.exports = {signUp, login, getMe, getUsers, getUserById}
+const getPostsByUserId = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const { userId } = req.params;
+
+  const posts = await PostService.getPostsByUserId(userId, page, limit);
+
+  res.json(posts);
+};
+
+module.exports = {
+  signUp,
+  login,
+  getMe,
+  getUsers,
+  getUserById,
+  getPostsByUserId,
+};
