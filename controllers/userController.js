@@ -40,6 +40,11 @@ const getPostsByUserId = async (req, res) => {
   res.json(posts);
 };
 
+const uploadAvatar = async (req, res) => {
+  await UserService.updateUserAvatar(req.user._id, req.file.filename);
+  res.json({file: req.file.filename})
+}
+
 module.exports = {
   signUp,
   login,
@@ -47,4 +52,5 @@ module.exports = {
   getUsers,
   getUserById,
   getPostsByUserId,
+  uploadAvatar
 };

@@ -1,11 +1,25 @@
 const router = require("express").Router()
-const { signUp, login, getMe, getUsers, getUserById, getPostsByUserId } = require("../controllers/userController")
+const { signUp, login, getMe, getUsers, getUserById, getPostsByUserId, uploadAvatar } = require("../controllers/userController")
 const tryCatchMiddleware = require('../middlewares/tryCatchMiddleware')
-const checkAuthMiddleware = require('../middlewares/checkAuthMiddleware')
+const checkAuthMiddleware = require('../middlewares/checkAuthMiddleware');
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "public/avatar");
+    },
+    filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      const ext = file.originalname.split(".").pop();
+      cb(null, `${file.fieldname}-${uniqueSuffix}.png`);
+    },
+  });
+  
+  const upload = multer({ storage: storage });
 
 router.post('/signup', tryCatchMiddleware(signUp))
 router.post('/login', tryCatchMiddleware(login))
-
+router.post("/upload_avatar", upload.single("photo"), checkAuthMiddleware, tryCatchMiddleware(uploadAvatar));
 router.get('/getMe', checkAuthMiddleware, tryCatchMiddleware(getMe))
 
 

@@ -57,6 +57,10 @@ class UserService {
         const user = await User.findById(id).lean()
         return user
     }
+
+    async updateUserAvatar(id, avatar) {
+        await User.findByIdAndUpdate(id, {avatar})
+    }
 }
 
 module.exports = new UserService()
