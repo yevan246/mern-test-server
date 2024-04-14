@@ -20,6 +20,10 @@ class PostService {
       .sort({ _id: -1 })
       .lean();
   }
+
+  async deletePostById(id, userId) {
+    return await Post.findOneAndDelete({_id: id, user: userId}) 
+  }
 }
 
 module.exports = new PostService();
