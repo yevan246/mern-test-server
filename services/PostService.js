@@ -8,6 +8,7 @@ class PostService {
       image,
       user: userId,
     });
+    await post.populate('user', "username avatar")
 
     return post;
   }
