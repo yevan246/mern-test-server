@@ -35,7 +35,7 @@ const getPostsByUserId = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
   const { userId } = req.params;
 
-  const posts = await PostService.getPostsByUserId(userId, page, limit);
+  const posts = await PostService.getPostsByUserId(userId, req.user._id, +page, +limit);
 
   res.json(posts);
 };

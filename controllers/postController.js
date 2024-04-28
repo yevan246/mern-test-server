@@ -22,9 +22,18 @@ const deletePost = async (req, res) => {
     res.status(401).json({message: 'Dont do this, we know who you are!'})
 } 
 
+const toggleLike = async (req, res) => {
+    const {postId} = req.params
+    const {_id: userId} = req.user
+
+    const result = await PostService.toggleLike(userId, postId)
+    res.json(result)
+}
+
 
 module.exports = {
     uploadPhoto,
     createPost,
-    deletePost
+    deletePost,
+    toggleLike
 }
