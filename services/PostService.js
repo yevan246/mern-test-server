@@ -80,13 +80,15 @@ class PostService {
       post: postId,
     }).lean();
 
+    const likesCount = await PostLikes.countDocuments({post: postId})
+
     if (postLike) {
       await PostLikes.findByIdAndDelete(postLike._id);
-      return { userLiked: false };
+      return {postId, likedByCurrentUser: false, likesCount: likesCount - 1 };
     }
 
     await PostLikes.create({ user: userId, post: postId });
-    return { userLiked: true };
+    return { postId, likedByCurrentUser: true, likesCount: likesCount + 1  };
   }
 }
 
