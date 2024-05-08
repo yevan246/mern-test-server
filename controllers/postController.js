@@ -30,10 +30,20 @@ const toggleLike = async (req, res) => {
     res.json(result)
 }
 
+const createComment = async (req, res) => {
+    const {postId} = req.params
+    const {_id: userId} = req.user
+    const {text} = req.body
+
+    const result = await PostService.createComment(userId, postId, text)
+    res.json(result)
+}
+
 
 module.exports = {
     uploadPhoto,
     createPost,
     deletePost,
-    toggleLike
+    toggleLike,
+    createComment
 }

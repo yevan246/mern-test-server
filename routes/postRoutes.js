@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const multer = require("multer");
-const { uploadPhoto, createPost, deletePost, toggleLike } = require("../controllers/postController");
+const { uploadPhoto, createPost, deletePost, toggleLike, createComment } = require("../controllers/postController");
 const checkAuthMiddleware = require("../middlewares/checkAuthMiddleware");
 const tryCatchMiddleware = require('../middlewares/tryCatchMiddleware')
 
@@ -22,5 +22,6 @@ router.delete("/:id", checkAuthMiddleware, tryCatchMiddleware(deletePost));
 router.post("/upload_photo", upload.single("photo"), uploadPhoto);
 
 router.post("/:postId/like", checkAuthMiddleware, tryCatchMiddleware(toggleLike));
+router.post("/:postId/comment", checkAuthMiddleware, tryCatchMiddleware(createComment));
 
 module.exports = router;

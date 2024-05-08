@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const Post = require("../models/postModel");
 const PostLikes = require("../models/likesForPostsModel");
 const ObjectId = require("mongodb").ObjectId;
+const PostComment = require("../models/postCommentModel");
 
 class PostService {
   async createPost(text, image, userId) {
@@ -62,10 +63,69 @@ class PostService {
       {
         $project: { likes: 0 },
       },
+      {
+        $lookup: {
+          from: "postcomments",
+          localField: "_id",
+          foreignField: "post",
+          as: "comments",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "comments.user",
+          foreignField: "_id",
+          as: "commentUsers",
+        },
+      },
+      {
+        $addFields: {
+          comments: {
+            $map: {
+              input: "$comments",
+              as: "comment",
+              in: {
+                $mergeObjects: [
+                  "$$comment",
+                  {
+                    user: {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: "$commentUsers",
+                            as: "user",
+                            cond: { $eq: ["$$user._id", "$$comment.user"] },
+                          },
+                        },
+                        0,
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          commentUsers: 0,
+          "comments.user.password": 0,
+          "comments.user.email": 0,
+          "comments.user.createdAt": 0,
+          "comments.user.updatedAt": 0,
+        },
+      },
       { $sort: { _id: -1 } },
       { $skip: (page - 1) * limit },
       { $limit: limit },
     ];
+    // const users = [{...}]
+    // let comments = [{...}]
+    // comments = comments.map(comment => {
+    //   return {...comment, user: users.filter(user => user._id === comment.user)[0] }
+    // })
     const res = await Post.aggregate(aggregation);
     return res;
   }
@@ -80,15 +140,19 @@ class PostService {
       post: postId,
     }).lean();
 
-    const likesCount = await PostLikes.countDocuments({post: postId})
+    const likesCount = await PostLikes.countDocuments({ post: postId });
 
     if (postLike) {
       await PostLikes.findByIdAndDelete(postLike._id);
-      return {postId, likedByCurrentUser: false, likesCount: likesCount - 1 };
+      return { postId, likedByCurrentUser: false, likesCount: likesCount - 1 };
     }
 
     await PostLikes.create({ user: userId, post: postId });
-    return { postId, likedByCurrentUser: true, likesCount: likesCount + 1  };
+    return { postId, likedByCurrentUser: true, likesCount: likesCount + 1 };
+  }
+
+  async createComment(userId, postId, text) {
+    return await PostComment.create({ text, post: postId, user: userId });
   }
 }
 

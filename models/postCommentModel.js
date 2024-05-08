@@ -6,4 +6,4 @@ const comentsSchema = new Schema({
     post: { type: Schema.Types.ObjectId, ref: 'post', required: true}
 }, {versionKey: false})
 
-module.exports = model('postComents', comentsSchema)
+module.exports = model('postComment', comentsSchema)
