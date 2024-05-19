@@ -109,6 +109,16 @@ class PostService {
         },
       },
       {
+        $addFields: {
+          comments: {
+            $sortArray: {
+              input: "$comments",
+              sortBy: { createdAt: -1 }
+            }
+          }
+        }
+      },
+      {
         $project: {
           commentUsers: 0,
           "comments.user.password": 0,
@@ -152,7 +162,7 @@ class PostService {
   }
 
   async createComment(userId, postId, text) {
-    return await PostComment.create({ text, post: postId, user: userId });
+    return (await PostComment.create({ text, post: postId, user: userId })).populate('user', 'username avatar createdAt');
   }
 }
 

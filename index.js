@@ -1,4 +1,6 @@
 const express = require("express");
+const morgan = require('morgan')
+
 const mongoose = require("mongoose");
 const cors = require("cors");
 const logger = require("./utills/logger");
@@ -9,7 +11,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
 
   const app = express()
   app.use(cors())
-
+  app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
   app.use(express.json())
 
   app.use('/static', express.static('public'))
