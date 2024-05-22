@@ -4,6 +4,7 @@ const TokenService = require('./TokenService')
 const UserExistsException = require('../exceptions/UserExistsException')
 const UserNotFoundException = require('../exceptions/UserNotFoundException')
 const UserPasswordIncorrectException = require('../exceptions/UserPasswordIncorrectException')
+const ObjectId = require("mongodb").ObjectId;
 
 class UserService {
     async signup(email, username, password) {
@@ -53,9 +54,39 @@ class UserService {
         return users
     }
 
-    async getUserById(id) {
-        const user = await User.findById(id).lean()
-        return user
+    async getUserById(id, currentUserId) {
+        const aggregation = [
+            {
+                $match: {_id: new ObjectId(id)}
+            },
+            {
+                $lookup: {
+                    from: "follows",
+                    localField: "_id",
+                    foreignField: "user",
+                    as: "following"
+                }
+            },
+            {
+                $lookup: {
+                    from: "follows",
+                    localField: "_id",
+                    foreignField: "following",
+                    as: "followers"
+                }
+            },
+            {
+                $addFields: {
+                    
+                    isFollowedByTarget: { $in: [currentUserId, "$followers.user"] },// подписаны ли мы на пользователя
+                    isFollowingTarget:{ $in: [currentUserId, "$following.following"] },  // подписан ли пользователь на нас
+                    following: { $size: "$following"},
+                    followers: { $size: "$followers"},
+                }
+            }
+        ]
+        const user = await User.aggregate(aggregation)
+        return user[0]
     }
 
     async updateUserAvatar(id, avatar) {
