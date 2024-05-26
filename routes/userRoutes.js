@@ -1,5 +1,5 @@
 const router = require("express").Router()
-const { signUp, login, getMe, getUsers, getUserById, getPostsByUserId, uploadAvatar } = require("../controllers/userController")
+const { signUp, login, getMe, getUsers, getUserById, getPostsByUserId, uploadAvatar, followUser } = require("../controllers/userController")
 const tryCatchMiddleware = require('../middlewares/tryCatchMiddleware')
 const checkAuthMiddleware = require('../middlewares/checkAuthMiddleware');
 const multer = require("multer");
@@ -25,6 +25,7 @@ router.get('/getMe', checkAuthMiddleware, tryCatchMiddleware(getMe))
 
 router.get('/', checkAuthMiddleware, tryCatchMiddleware(getUsers))
 router.get('/:id', checkAuthMiddleware, tryCatchMiddleware(getUserById))
+router.post('/:id/follow', checkAuthMiddleware, tryCatchMiddleware(followUser))
 
 router.get('/:userId/posts', checkAuthMiddleware, tryCatchMiddleware(getPostsByUserId))
 

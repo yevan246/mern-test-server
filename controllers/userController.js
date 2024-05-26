@@ -15,8 +15,9 @@ const login = async (req, res) => {
   res.json(result);
 };
 
-const getMe = (req, res) => {
-  res.json({ user: req.user });
+const getMe = async (req, res) => {
+  const user = await UserService.getUserById(req.user._id, req.user._id)
+  res.json({ user });
 };
 
 const getUsers = async (req, res) => {
@@ -45,6 +46,11 @@ const uploadAvatar = async (req, res) => {
   res.json({file: req.file.filename})
 }
 
+const followUser = async (req, res) => {
+  const result = await UserService.followUser(req.user._id, req.params.id);
+  res.json({result})
+}
+
 module.exports = {
   signUp,
   login,
@@ -52,5 +58,6 @@ module.exports = {
   getUsers,
   getUserById,
   getPostsByUserId,
-  uploadAvatar
+  uploadAvatar,
+  followUser
 };

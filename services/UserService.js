@@ -1,4 +1,5 @@
 const User = require('../models/userModel')
+const Follow = require('../models/followModel')
 const bcrypt = require('bcrypt')
 const TokenService = require('./TokenService')
 const UserExistsException = require('../exceptions/UserExistsException')
@@ -77,7 +78,6 @@ class UserService {
             },
             {
                 $addFields: {
-                    
                     isFollowedByTarget: { $in: [currentUserId, "$followers.user"] },// подписаны ли мы на пользователя
                     isFollowingTarget:{ $in: [currentUserId, "$following.following"] },  // подписан ли пользователь на нас
                     following: { $size: "$following"},
@@ -91,6 +91,17 @@ class UserService {
 
     async updateUserAvatar(id, avatar) {
         await User.findByIdAndUpdate(id, {avatar})
+    }
+
+    async followUser(id, currentId) {
+        const isFollowed  = await Follow.findOne({user: id, following: currentId}).lean()
+
+        if (isFollowed) {
+            await Follow.findByIdAndDelete(isFollowed._id)
+            return -1
+        }
+        await Follow.create({user: id, following: currentId})
+        return 1
     }
 }
 
